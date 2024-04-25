@@ -9,4 +9,16 @@ public class Category {
         this.uuid = uuid;
         this.name = name;
     }
+
+    public UUID getId() {
+        return uuid;
+    }
+
+    public String getName(){
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 }
