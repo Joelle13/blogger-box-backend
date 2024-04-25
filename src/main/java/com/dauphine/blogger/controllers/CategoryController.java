@@ -1,14 +1,11 @@
 package com.dauphine.blogger.controllers;
 
-import com.dauphine.blogger.dto.CreationCategoryRequest;
-import com.dauphine.blogger.dto.UpdateCategoryRequest;
 import com.dauphine.blogger.models.Category;
 import com.dauphine.blogger.services.CategoryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 

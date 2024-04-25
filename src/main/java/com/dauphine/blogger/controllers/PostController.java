@@ -2,6 +2,7 @@ package com.dauphine.blogger.controllers;
 
 import com.dauphine.blogger.dto.CreationPostRequest;
 import com.dauphine.blogger.dto.UpdatePostRequest;
+import com.dauphine.blogger.models.Category;
 import com.dauphine.blogger.models.Post;
 import com.dauphine.blogger.services.PostService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -32,8 +33,8 @@ public class PostController {
             @Parameter (description = "Post's content")
             @RequestBody String content,
             @Parameter (description = "Post's category")
-            @PathVariable UUID categoryId){
-        return postService.create(title, content, categoryId);
+            @PathVariable Category category){
+        return postService.create(title, content, category);
     }
 
     @PutMapping("/{id}")

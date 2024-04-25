@@ -2,6 +2,7 @@ package com.dauphine.blogger.services.impl;
 
 import com.dauphine.blogger.models.Category;
 import com.dauphine.blogger.models.Post;
+import com.dauphine.blogger.repositories.PostRepository;
 import com.dauphine.blogger.services.PostService;
 import org.springframework.stereotype.Service;
 
@@ -13,7 +14,10 @@ import java.util.UUID;
 @Service
 public class PostServiceImpl implements PostService {
     private final List<Post> temporaryPosts;
-    public PostServiceImpl() {
+
+    private final PostRepository repository;
+    public PostServiceImpl(PostRepository repository) {
+        this.repository = repository;
         this.temporaryPosts = new ArrayList<>();
         Category c = new Category(UUID.randomUUID(), "my first category");
         temporaryPosts.add(new Post(UUID.randomUUID(), "First post","This is my first post, hello",new Date(),c));
@@ -29,23 +33,19 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public List<Post> getAll() {
-        return temporaryPosts;
+        return repository.findAll();
     }
 
     @Override
     public Post getById(UUID id) {
-        return temporaryPosts.stream()
-                .filter(post -> id.equals(post.getCategory()))
-                .findFirst()
+        return repository.findById(id)
                 .orElse(null);
     }
 
     @Override
-    public Post create(String title, String content, UUID categoryId) {
-        Category c = new Category(UUID.randomUUID(), "my first category");
+    public Post create(String title, String content, Category c) {
         Post p = new Post(UUID.randomUUID(), title,content,new Date(),c);
-        temporaryPosts.add(p);
-        return p;
+        return repository.save(p);
     }
 
     @Override
@@ -58,11 +58,12 @@ public class PostServiceImpl implements PostService {
             p.setTitle(title);
             p.setContent(content);
         }
-        return p;
+        return repository.save(p);
     }
 
     @Override
     public boolean deleteById(UUID id) {
-        return temporaryPosts.removeIf(post -> id.equals(post.getId()));
+        repository.deleteById(id);
+        return true;
     }
 }
