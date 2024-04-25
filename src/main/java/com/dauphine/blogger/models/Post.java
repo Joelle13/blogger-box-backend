@@ -1,26 +1,42 @@
 package com.dauphine.blogger.models;
 
+import jakarta.persistence.*;
+
 import java.util.Date;
 import java.util.UUID;
 
+@Entity
+@Table(name="entity")
 public class Post {
+
+    @Id
+    @Column(name = "id")
     private UUID uuid;
+    @Column(name = "title")
     private String title;
+    @Column(name = "content")
     private String content;
+    @Column(name = "created_date")
     private Date createdDate;
-    private UUID idCategory;
+    @ManyToOne
+    @JoinColumn(name="category_id")
+    private Category category;
 
 
-    public Post(UUID uuid, String title, String content,Date date, UUID catId) {
+    public Post(UUID uuid, String title, String content,Date date, Category c) {
         this.uuid = uuid;
         this.title = title;
         this.content = content;
         createdDate = date;
-        idCategory = catId;
+        category = c;
     }
 
-    public UUID getCatId() {
-        return this.idCategory;
+    public Post() {
+
+    }
+
+    public Category getCategory() {
+        return this.category;
     }
 
     public void setTitle(String title) {

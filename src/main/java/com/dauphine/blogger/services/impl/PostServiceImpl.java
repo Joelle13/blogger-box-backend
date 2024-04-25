@@ -16,14 +16,14 @@ public class PostServiceImpl implements PostService {
     public PostServiceImpl() {
         this.temporaryPosts = new ArrayList<>();
         Category c = new Category(UUID.randomUUID(), "my first category");
-        temporaryPosts.add(new Post(UUID.randomUUID(), "First post","This is my first post, hello",new Date(),c.getId()));
-        temporaryPosts.add(new Post(UUID.randomUUID(), "Second post","This is my second post, hello",new Date(),c.getId()));
-        temporaryPosts.add(new Post(UUID.randomUUID(), "Third post","This is my third post, hello",new Date(),c.getId()));
+        temporaryPosts.add(new Post(UUID.randomUUID(), "First post","This is my first post, hello",new Date(),c));
+        temporaryPosts.add(new Post(UUID.randomUUID(), "Second post","This is my second post, hello",new Date(),c));
+        temporaryPosts.add(new Post(UUID.randomUUID(), "Third post","This is my third post, hello",new Date(),c));
     }
     @Override
     public List<Post> getAllByCategoryId(UUID categoryId) {
         return temporaryPosts.stream()
-                .filter(post -> categoryId.equals(post.getCatId()))
+                .filter(post -> categoryId.equals(post.getCategory()))
                 .toList();
     }
 
@@ -35,14 +35,15 @@ public class PostServiceImpl implements PostService {
     @Override
     public Post getById(UUID id) {
         return temporaryPosts.stream()
-                .filter(post -> id.equals(post.getCatId()))
+                .filter(post -> id.equals(post.getCategory()))
                 .findFirst()
                 .orElse(null);
     }
 
     @Override
     public Post create(String title, String content, UUID categoryId) {
-        Post p = new Post(UUID.randomUUID(), title,content,new Date(),categoryId);
+        Category c = new Category(UUID.randomUUID(), "my first category");
+        Post p = new Post(UUID.randomUUID(), title,content,new Date(),c);
         temporaryPosts.add(p);
         return p;
     }
@@ -50,7 +51,7 @@ public class PostServiceImpl implements PostService {
     @Override
     public Post update(UUID id, String title, String content) {
         Post p = temporaryPosts.stream()
-                .filter(post -> id.equals(post.getCatId()))
+                .filter(post -> id.equals(post.getCategory()))
                 .findFirst()
                 .orElse(null);
         if(p!=null){
