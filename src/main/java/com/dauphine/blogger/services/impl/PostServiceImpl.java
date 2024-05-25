@@ -25,9 +25,9 @@ public class PostServiceImpl implements PostService {
         temporaryPosts.add(new Post(UUID.randomUUID(), "Third post","This is my third post, hello",new Date(),c));
     }
     @Override
-    public List<Post> getAllByCategoryId(UUID categoryId) {
+    public List<Post> getAllByCategoryId(Category category) {
         return temporaryPosts.stream()
-                .filter(post -> categoryId.equals(post.getCategory()))
+                .filter(post -> category.equals(post.getCategory()))
                 .toList();
     }
 

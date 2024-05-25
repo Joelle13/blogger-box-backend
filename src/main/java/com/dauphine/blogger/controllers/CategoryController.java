@@ -18,13 +18,13 @@ public class CategoryController {
         this.categoryService = categoryService;
     }
 
-    @GetMapping("")
+    /*@GetMapping("")
     @Operation(
             summary = "Retrieve all categories"
     )
     public List<Category> categories(){
         return categoryService.getAll();
-    }
+    }*/
 
     @GetMapping("/{id}")
     @Operation(
@@ -72,14 +72,8 @@ public class CategoryController {
          categoryService.deleteById(id);
     }
 
-    /*@GetMapping("/{id}/posts")
-    @Operation(
-            summary = "Posts by category",
-            description = "Get all post of a certain categories"
-    )
-    public String postCategories(
-            @Parameter (description = "Id of the category")
-            @PathVariable UUID id){
-        return "posts from the category " + id;
-    }*/
+    @GetMapping
+    public List<Category> getAll(){
+        return categoryService.getAll();
+    }
 }

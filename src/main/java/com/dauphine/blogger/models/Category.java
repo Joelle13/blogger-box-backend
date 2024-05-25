@@ -31,6 +31,14 @@ public class Category {
         return uuid;
     }
 
+    public UUID getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(UUID uuid) {
+        this.uuid = uuid;
+    }
+
     public String getName(){
         return name;
     }

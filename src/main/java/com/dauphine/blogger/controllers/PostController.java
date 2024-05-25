@@ -33,7 +33,7 @@ public class PostController {
             @Parameter (description = "Post's content")
             @RequestBody String content,
             @Parameter (description = "Post's category")
-            @PathVariable Category category){
+            @RequestBody Category category){
         return postService.create(title, content, category);
     }
 
@@ -71,8 +71,8 @@ public class PostController {
     )
     public List<Post> postCategories(
             @Parameter (description = "Id of the category")
-            @PathVariable UUID id){
-        return postService.getAllByCategoryId(id);
+            @PathVariable Category c){
+        return postService.getAllByCategoryId(c);
     }
 
     @GetMapping("")
