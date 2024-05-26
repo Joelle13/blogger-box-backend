@@ -3,8 +3,10 @@ package com.dauphine.blogger.services.impl;
 import com.dauphine.blogger.models.Category;
 import com.dauphine.blogger.models.Post;
 import com.dauphine.blogger.repositories.PostRepository;
+import com.dauphine.blogger.services.CategoryService;
 import com.dauphine.blogger.services.PostService;
 import org.springframework.stereotype.Service;
+import com.dauphine.blogger.dto.CreationPostRequest;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -16,8 +18,10 @@ public class PostServiceImpl implements PostService {
     private final List<Post> temporaryPosts;
 
     private final PostRepository repository;
-    public PostServiceImpl(PostRepository repository) {
+    private final CategoryService categoryService;
+    public PostServiceImpl(PostRepository repository, CategoryService categoryService) {
         this.repository = repository;
+        this.categoryService = categoryService;
         this.temporaryPosts = new ArrayList<>();
         Category c = new Category(UUID.randomUUID(), "my first category");
         temporaryPosts.add(new Post(UUID.randomUUID(), "First post","This is my first post, hello",new Date(),c));
@@ -43,8 +47,9 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public Post create(String title, String content, Category c) {
-        Post p = new Post(UUID.randomUUID(), title,content,new Date(),c);
+    public Post create(CreationPostRequest postRequest) {
+        Post p = new Post(UUID.randomUUID(), postRequest.getTitle(),postRequest.getContent(),new Date(),
+                categoryService.getById(postRequest.getCategoryId()));
         return repository.save(p);
     }
 

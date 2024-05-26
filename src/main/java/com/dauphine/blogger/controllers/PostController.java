@@ -28,13 +28,9 @@ public class PostController {
             description = "Create a new post"
     )
     public Post createPost(
-            @Parameter (description = "Post's title")
-            @RequestBody String title,
-            @Parameter (description = "Post's content")
-            @RequestBody String content,
-            @Parameter (description = "Post's category")
-            @RequestBody Category category){
-        return postService.create(title, content, category);
+            @Parameter (description = "Post")
+            @RequestBody CreationPostRequest post){
+        return postService.create(post);
     }
 
     @PutMapping("/{id}")
