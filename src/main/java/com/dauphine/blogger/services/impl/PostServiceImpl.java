@@ -1,5 +1,7 @@
 package com.dauphine.blogger.services.impl;
 
+import com.dauphine.blogger.exceptions.CategoryNotFoundByIdException;
+import com.dauphine.blogger.exceptions.PostNotFoundByIdException;
 import com.dauphine.blogger.models.Category;
 import com.dauphine.blogger.models.Post;
 import com.dauphine.blogger.repositories.PostRepository;
@@ -15,60 +17,47 @@ import java.util.UUID;
 
 @Service
 public class PostServiceImpl implements PostService {
-    private final List<Post> temporaryPosts;
-
-    private final PostRepository repository;
+    private final PostRepository postRepository;
     private final CategoryService categoryService;
     public PostServiceImpl(PostRepository repository, CategoryService categoryService) {
-        this.repository = repository;
+        this.postRepository = repository;
         this.categoryService = categoryService;
-        this.temporaryPosts = new ArrayList<>();
-        Category c = new Category(UUID.randomUUID(), "my first category");
-        temporaryPosts.add(new Post(UUID.randomUUID(), "First post","This is my first post, hello",new Date(),c));
-        temporaryPosts.add(new Post(UUID.randomUUID(), "Second post","This is my second post, hello",new Date(),c));
-        temporaryPosts.add(new Post(UUID.randomUUID(), "Third post","This is my third post, hello",new Date(),c));
-    }
+        }
     @Override
-    public List<Post> getAllByCategoryId(Category category) {
-        return temporaryPosts.stream()
-                .filter(post -> category.equals(post.getCategory()))
-                .toList();
+    public List<Post> getAllByCategoryId(Category category) throws CategoryNotFoundByIdException {
+        categoryService.getById(category.getId());
+        return postRepository.getAllByCategory(category);
     }
 
     @Override
     public List<Post> getAll() {
-        return repository.findAll();
+        return postRepository.findAll();
     }
 
     @Override
-    public Post getById(UUID id) {
-        return repository.findById(id)
-                .orElse(null);
+    public Post getById(UUID id) throws PostNotFoundByIdException {
+        return postRepository.findById(id)
+                .orElseThrow(() -> new PostNotFoundByIdException());
     }
 
     @Override
-    public Post create(CreationPostRequest postRequest) {
+    public Post create(CreationPostRequest postRequest) throws CategoryNotFoundByIdException {
         Post p = new Post(UUID.randomUUID(), postRequest.getTitle(),postRequest.getContent(),new Date(),
                 categoryService.getById(postRequest.getCategoryId()));
-        return repository.save(p);
+        return postRepository.save(p);
     }
 
     @Override
-    public Post update(UUID id, String title, String content) {
-        Post p = temporaryPosts.stream()
-                .filter(post -> id.equals(post.getCategory()))
-                .findFirst()
-                .orElse(null);
-        if(p!=null){
-            p.setTitle(title);
-            p.setContent(content);
-        }
-        return repository.save(p);
+    public Post update(UUID id, String title, String content) throws PostNotFoundByIdException {
+        Post p = getById(id);
+        p.setTitle(title);
+        p.setContent(content);
+        return postRepository.save(p);
     }
 
     @Override
     public boolean deleteById(UUID id) {
-        repository.deleteById(id);
+        postRepository.deleteById(id);
         return true;
     }
 }

@@ -50,11 +50,6 @@ public class Post {
     public UUID getId() {
         return this.uuid;
     }
-
-    public UUID getUuid() {
-        return uuid;
-    }
-
     public void setUuid(UUID uuid) {
         this.uuid = uuid;
     }

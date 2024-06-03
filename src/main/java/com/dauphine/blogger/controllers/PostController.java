@@ -2,13 +2,17 @@ package com.dauphine.blogger.controllers;
 
 import com.dauphine.blogger.dto.CreationPostRequest;
 import com.dauphine.blogger.dto.UpdatePostRequest;
+import com.dauphine.blogger.exceptions.CategoryNotFoundByIdException;
+import com.dauphine.blogger.exceptions.PostNotFoundByIdException;
 import com.dauphine.blogger.models.Category;
 import com.dauphine.blogger.models.Post;
 import com.dauphine.blogger.services.PostService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
 import java.util.List;
 import java.util.UUID;
 
@@ -27,10 +31,13 @@ public class PostController {
             summary = "New post",
             description = "Create a new post"
     )
-    public Post createPost(
+    public ResponseEntity<Post> createPost(
             @Parameter (description = "Post")
-            @RequestBody CreationPostRequest post){
-        return postService.create(post);
+            @RequestBody CreationPostRequest post) throws CategoryNotFoundByIdException {
+        Post p = postService.create(post);
+        return ResponseEntity
+                .created(URI.create("v1/posts/"+p.getId()))
+                .body(p);
     }
 
     @PutMapping("/{id}")
@@ -38,14 +45,10 @@ public class PostController {
             summary = "Update a  post",
             description = "Updating a post"
     )
-    public Post updatePost(
-            @Parameter(description = "Id of the post to update")
-            @PathVariable UUID id,
-            @Parameter (description = "title")
-            @RequestBody String title,
-            @Parameter (description = "content")
-            @RequestBody String content){
-        return postService.update(id, title, content);
+    public ResponseEntity<Post> updatePost(@Parameter(description = "the post to update")
+                                           UpdatePostRequest post) throws PostNotFoundByIdException {
+        Post p =postService.update(post.getPostId(), post.getTitle(), post.getContent());
+        return ResponseEntity.ok(p);
 
     }
 
@@ -54,10 +57,12 @@ public class PostController {
             summary = "Delete post",
             description = "Deleting a  post"
     )
-    public boolean deletePost(
+    public ResponseEntity<?> deletePost(
             @Parameter (description = "Id of the post to delete")
-            @PathVariable UUID id){
-        return postService.deleteById(id);
+            @PathVariable UUID id) throws PostNotFoundByIdException {
+        postService.getById(id);
+        postService.deleteById(id);
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("categories/{id}/posts")
@@ -65,10 +70,11 @@ public class PostController {
             summary = "Posts by category",
             description = "Get all post of a certain categories"
     )
-    public List<Post> postCategories(
+    public ResponseEntity<List<Post>> postCategories(
             @Parameter (description = "Id of the category")
-            @PathVariable Category c){
-        return postService.getAllByCategoryId(c);
+            @PathVariable Category c) throws CategoryNotFoundByIdException {
+        List<Post> posts =postService.getAllByCategoryId(c);
+        return ResponseEntity.ok(posts);
     }
 
     @GetMapping("")
@@ -76,8 +82,9 @@ public class PostController {
             summary = "Ordered posts",
             description = "All posts ordered by creation date"
     )
-    public List<Post> postDate(){
-        return postService.getAll();
+    public ResponseEntity<List<Post>> getAllPosts(){
+        List<Post> posts = postService.getAll();
+        return ResponseEntity.ok(posts);
     }
 
     @GetMapping("/{id}")
@@ -85,10 +92,11 @@ public class PostController {
             summary = "Post by id",
             description = "Post by ID given"
     )
-    public Post getPost(
+    public ResponseEntity<Post> getPostById(
             @Parameter (description = "Id of the post")
-            @PathVariable UUID id){
-        return postService.getById(id);
+            @PathVariable UUID id) throws PostNotFoundByIdException {
+        Post post = postService.getById(id);
+        return ResponseEntity.ok(post);
     }
 
 }

@@ -1,63 +1,63 @@
 package com.dauphine.blogger.services.impl;
 
+import com.dauphine.blogger.exceptions.CategoryAlreadyExistsException;
+import com.dauphine.blogger.exceptions.CategoryNotFoundByIdException;
 import com.dauphine.blogger.models.Category;
 import com.dauphine.blogger.repositories.CategoryRepository;
 import com.dauphine.blogger.services.CategoryService;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 @Service
 public class CategoryServiceImpl implements CategoryService {
 
-    private final List<Category> temporaryCategories;
-    private final CategoryRepository repository;
+
+    private final CategoryRepository categoryRepository;
 
     public CategoryServiceImpl(CategoryRepository repository) {
-        this.repository = repository;
-        this.temporaryCategories = new ArrayList<>();
-        temporaryCategories.add(new Category(UUID.randomUUID(), "my first category"));
-        temporaryCategories.add(new Category(UUID.randomUUID(), "my second category"));
-        temporaryCategories.add(new Category(UUID.randomUUID(), "my third category"));
+        this.categoryRepository = repository;
     }
 
 
     @Override
     public List<Category> getAll() {
-        return repository.findAll();
+        return categoryRepository.findAll();
     }
 
     @Override
-    public Category getById(UUID id) {
-        return repository.findById(id)
-                .orElse(null);
+    public Category getById(UUID id) throws CategoryNotFoundByIdException {
+        return categoryRepository.findById(id)
+                .orElseThrow(() -> new CategoryNotFoundByIdException());
     }
 
     @Override
-    public Category create(String name) {
+    public Category create(String name) throws CategoryAlreadyExistsException {
+        if(categoryRepository.findByName(name) != null){
+            throw new CategoryAlreadyExistsException();
+        }
         Category c = new Category(UUID.randomUUID(),name);
-        return repository.save(c);
+        return categoryRepository.save(c);
     }
 
     @Override
-    public Category update(UUID id, String name) {
+    public Category update(UUID id, String name) throws CategoryNotFoundByIdException {
         Category category = getById(id);
         if(category == null){
-            return null;
+            throw new CategoryNotFoundByIdException();
         }
         category.setName(name);
-        return repository.save(category);
+        return categoryRepository.save(category);
     }
 
     @Override
     public void deleteById(UUID id) {
-        repository.deleteById(id);
+        categoryRepository.deleteById(id);
     }
 
     @Override
     public List<Category> getAllByName(String name) {
-        return repository.findAllByName(name);
+        return categoryRepository.findAllByName(name);
     }
 }
