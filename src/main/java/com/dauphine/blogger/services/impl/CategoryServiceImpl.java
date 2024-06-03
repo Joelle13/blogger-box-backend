@@ -37,7 +37,7 @@ public class CategoryServiceImpl implements CategoryService {
         if(categoryRepository.findByName(name) != null){
             throw new CategoryAlreadyExistsException();
         }
-        Category c = new Category(UUID.randomUUID(),name);
+        Category c = new Category(name);
         return categoryRepository.save(c);
     }
 
