@@ -11,8 +11,7 @@ public interface CategoryService {
     List<Category> getAll();
     Category getById(UUID id) throws CategoryNotFoundByIdException;
     Category create (String name) throws CategoryAlreadyExistsException;
-    Category update(UUID id, String name) throws CategoryNotFoundByIdException;
-    void deleteById(UUID id);
+    Category update(UUID id, String name) throws CategoryNotFoundByIdException, CategoryAlreadyExistsException;
+    void deleteById(UUID id) throws CategoryNotFoundByIdException;
 
-    List<Category> getAllByName(String name);
 }

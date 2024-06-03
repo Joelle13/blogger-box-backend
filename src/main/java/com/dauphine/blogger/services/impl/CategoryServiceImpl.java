@@ -29,35 +29,32 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public Category getById(UUID id) throws CategoryNotFoundByIdException {
         return categoryRepository.findById(id)
-                .orElseThrow(() -> new CategoryNotFoundByIdException());
+                .orElseThrow(()->new CategoryNotFoundByIdException(id));
     }
 
     @Override
     public Category create(String name) throws CategoryAlreadyExistsException {
         if(categoryRepository.findByName(name) != null){
-            throw new CategoryAlreadyExistsException();
+            throw new CategoryAlreadyExistsException(name);
         }
         Category c = new Category(name);
         return categoryRepository.save(c);
     }
 
     @Override
-    public Category update(UUID id, String name) throws CategoryNotFoundByIdException {
+    public Category update(UUID id, String name) throws CategoryNotFoundByIdException, CategoryAlreadyExistsException {
         Category category = getById(id);
-        if(category == null){
-            throw new CategoryNotFoundByIdException();
+        if(categoryRepository.findByName(name) != null){
+            throw new CategoryAlreadyExistsException(name);
         }
         category.setName(name);
         return categoryRepository.save(category);
     }
 
     @Override
-    public void deleteById(UUID id) {
+    public void deleteById(UUID id) throws CategoryNotFoundByIdException {
+        getById(id);
         categoryRepository.deleteById(id);
     }
 
-    @Override
-    public List<Category> getAllByName(String name) {
-        return categoryRepository.findAllByName(name);
-    }
 }
